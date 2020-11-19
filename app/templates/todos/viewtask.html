@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ post['title'] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <br>
+    <div class="task-description">{{ post['body'] }}</div>
+    <hr>
+    <form action="{{ url_for('todos.delete', id=post['id']) }}" method="post">
+        <input class="danger" type="submit" value="Удалить" onclick="return confirm('Вы уверены?');">
+    </form>
+    <hr>
+    <form action="{{ url_for('todos.index') }}" method="get">
+      <input type="submit" value="Вернуться">
+    </form>
+    <a href="#" id="comments">Комментарии</a>
+    <div id="commentsdiv"></div>
+{% endblock %}
+{% block script %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $(function() {
+      $('#comments').bind('click', function() {
+        $.getJSON("{{ url_for('todos.comments', id=post['id']) }}", {
+        }, function(data) {
+          $("#commentsdiv").empty()
+          data.result.forEach(element => {
+            var row = document.createElement('div');
+            row.textContent = element;
+            $("#commentsdiv").append(row);
+          });
+        });
+        return false;
+      });
+    });
+  </script>
+{% endblock %}
